@@ -3,12 +3,12 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<LangVersion>7.1</LangVersion>
-		<PackageId>Aliyun.SLS.SDK</PackageId>
-		<Authors>Aliyun SLS</Authors>
+		<PackageId>Aliyun.SLS.SDK.Fix</PackageId>
+		<Authors>yhnbgfd</Authors>
 		<NeutralLanguage>zh-CN</NeutralLanguage>
 		<PackageLicenseUrl>https://raw.githubusercontent.com/aliyun/aliyun-log-dotnetcore-sdk/master/LICENSE</PackageLicenseUrl>
-		<Owners>Aliyun SLS</Owners>
-		<PackageProjectUrl>https://github.com/aliyun/aliyun-log-dotnetcore-sdk</PackageProjectUrl>
+		<Owners>yhnbgfd</Owners>
+		<PackageProjectUrl>https://github.com/yhnbgfd/aliyun-log-dotnetcore-sdk</PackageProjectUrl>
 		<PackageTags>Aliyun </PackageTags>
 		<Title>Aliyun LogService .Net Core SDK</Title>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
