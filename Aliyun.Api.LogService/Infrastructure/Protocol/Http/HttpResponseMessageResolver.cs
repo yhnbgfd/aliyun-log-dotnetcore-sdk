@@ -24,6 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using Aliyun.Api.LogService.Utils;
+using Ionic.Zlib;
+using K4os.Compression.LZ4;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -33,17 +37,13 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Aliyun.Api.LogService.Utils;
-using Ionic.Zlib;
-using LZ4;
-using Newtonsoft.Json;
 
 namespace Aliyun.Api.LogService.Infrastructure.Protocol.Http
 {
     public class HttpResponseMessageResolver : IResponseResolver
     {
         public HttpResponseMessage HttpResponseMessage { get; }
-        
+
         public String RequestId { get; private set; }
 
         public Boolean IsSuccess { get; private set; }
@@ -170,31 +170,35 @@ namespace Aliyun.Api.LogService.Infrastructure.Protocol.Http
             switch (compressType)
             {
                 case CompressType.None:
-                {
-                    return orignData;
-                }
-
-                case CompressType.Lz4:
-                {
-                    if (!rawSize.HasValue)
                     {
-                        throw new ArgumentException($"{LogHeaders.BodyRawSize} is required when using [lz4] compress.");
+                        return orignData;
                     }
 
-                    var rawData = LZ4Codec.Decode(orignData, 0, orignData.Length, rawSize.Value);
-                    return rawData;
-                }
+                case CompressType.Lz4:
+                    {
+                        if (!rawSize.HasValue)
+                        {
+                            throw new ArgumentException($"{LogHeaders.BodyRawSize} is required when using [lz4] compress.");
+                        }
+
+                        //var rawData = LZ4.LZ4Codec.Decode(orignData, 0, orignData.Length, rawSize.Value);
+
+                        byte[] rawData = new byte[rawSize.Value];
+                        int ret = LZ4Codec.Decode(orignData, 0, orignData.Length, rawData, 0, rawSize.Value);
+
+                        return rawData;
+                    }
 
                 case CompressType.Deflate:
-                {
-                    var rawData = ZlibStream.UncompressBuffer(orignData);
-                    return rawData;
-                }
+                    {
+                        var rawData = ZlibStream.UncompressBuffer(orignData);
+                        return rawData;
+                    }
 
                 default:
-                {
-                    throw new ArgumentOutOfRangeException(nameof(compressType), compressType, null);
-                }
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(compressType), compressType, null);
+                    }
             }
         }
 
@@ -246,7 +250,7 @@ namespace Aliyun.Api.LogService.Infrastructure.Protocol.Http
             data = this.decompressor(data);
             var result = this.deserializer(data, typeof(TResult));
 
-            return (TResult) result; // Always safe! Expect the custom serializer does some weird operations.
+            return (TResult)result; // Always safe! Expect the custom serializer does some weird operations.
         }
 
         public async Task<IResponse> ResolveAsync()
